@@ -11,7 +11,7 @@ PRODUCTVERSION 0,0,0,0
             VALUE "InternalName", "backup"
             VALUE "LegalCopyright", "Copyright (c) 2013 Toni Spets"
             VALUE "OriginalFileName", "backup.dll"
-            VALUE "FileDescription", "OllyDbg v1.10 backup plugin"
+            VALUE "FileDescription", "OllyDbg v1.10/v2.01 backup plugin"
         }
     }
 

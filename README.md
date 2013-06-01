@@ -1,5 +1,5 @@
-OllyDbg v1.10 backup plugin
-===========================
+OllyDbg v1.10 / v2.01 backup plugin
+===================================
 
 ![ollydbg-backup screenshot](screenshot.png)
 
