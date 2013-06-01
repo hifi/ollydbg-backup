@@ -60,7 +60,7 @@ int _export cdecl ODBG_Pluginmenu(int origin, char data[4096], void *item)
     if (origin == PM_MAIN) {
         strcpy(data,
             "0 &Save to MODULE.csv,"
-            "1 S&ave to MODULE_YYYY-MM-DD_HH:MM:SS.csv,"
+            "1 S&ave to MODULE_YYYYMMDD_HHMMSS.csv,"
             "2 &Load MODULE.csv,"
             "3 L&oad...,"
         );
