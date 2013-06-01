@@ -3,6 +3,8 @@ OllyDbg v1.10 backup plugin
 
 ![ollydbg-backup screenshot](screenshot.png)
 
+Download latest binary release: [backup.dll](https://github.com/hifi/ollydbg-backup/raw/binary-release/backup.dll)
+
 This simple plugin allows saving the loaded executable labels and comments to a
 CSV file and later loading them back in. You can store, share, modify and merge
 your notes with ease and never lose your notes because OllyDbg flipped and threw 
