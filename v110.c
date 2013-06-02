@@ -117,7 +117,7 @@ void _export cdecl ODBG_Pluginaction(int origin, int action, void *item)
         char buf[MAX_PATH];
         strcpy_s(buf, sizeof buf, module->path);
 
-        char *last_stop = strchr(buf, '.');
+        char *last_stop = strrchr(buf, '.');
         if (!last_stop) {
             return;
         }
