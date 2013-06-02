@@ -23,7 +23,7 @@
 typedef void (*cb1)(void *, size_t, void *);
 typedef void (*cb2)(int, void *);
 
-struct csv_input {
+struct csv_data {
     int labels;
     int comments;
     int index;
@@ -33,37 +33,37 @@ struct csv_input {
     rva_t *rvas;
 };
 
-static void csv_value(void *buf, size_t len, struct csv_input *data)
+static void csv_value(void *rbuf, size_t len, struct csv_data *data)
 {
-    char str[1024];
+    char buf[256];
 
-    if (len > sizeof(str) - 1)
-        len = sizeof(str) - 1;
-
-    memcpy(str, buf, len);
-    str[len] = '\0';
+    if (len > sizeof(buf) - 1)
+        len = sizeof(buf) - 1;
+    memcpy(buf, rbuf, len);
+    buf[len] = '\0';
 
     if (data->index == 0)
-        strncpy(data->address, str, sizeof(data->address) - 1);
+        strcpy_s(data->address, sizeof(data->address), buf);
 
     if (data->index == 1)
-        strncpy(data->label, str, sizeof(data->label) - 1);
+        strcpy_s(data->label, sizeof(data->label), buf);
 
     if (data->index == 2)
-        strncpy(data->comment, str, sizeof(data->comment) - 1);
+        strcpy_s(data->comment, sizeof(data->comment), buf);
 
     data->index++;
 }
 
-static void csv_eol(int x, struct csv_input *data)
+static void csv_eol(int x, struct csv_data *data)
 {
     long int address = strtol(data->address, NULL, 16);
 
     if (strcmp(data->address, "RVA") != 0 && (data->label[0] || data->comment[0])) {
         rva_t *rva = malloc(sizeof(rva_t));
+
         rva->address = address;
-        strcpy(rva->label, data->label);
-        strcpy(rva->comment, data->comment);
+        strcpy_s(rva->label, sizeof(rva->label), data->label);
+        strcpy_s(rva->comment, sizeof(rva->label), data->comment);
 
         LIST_INSERT(data->rvas, rva);
 
@@ -77,19 +77,19 @@ static void csv_eol(int x, struct csv_input *data)
     }
 
     data->index = 0;
-    memset(data->address, 0, sizeof data->address);
-    memset(data->label, 0, sizeof data->label);
-    memset(data->comment, 0, sizeof data->comment);
+    data->address[0] = '\0';
+    data->label[0] = '\0';
+    data->comment[0] = '\0';
 }
 
 rva_t *backup_load(const char *filename, char *message)
 {
     char row[2048];
-    struct csv_input input;
+    struct csv_data data;
     struct csv_parser p;
     csv_init(&p, 0);
 
-    memset(&input, 0, sizeof input);
+    memset(&data, 0, sizeof data);
 
     FILE *fh = fopen(filename, "rb");
     if (!fh) {
@@ -98,7 +98,7 @@ rva_t *backup_load(const char *filename, char *message)
     }
 
     while (fgets(row, sizeof row, fh)) {
-        csv_parse(&p, row, strlen(row), (cb1)csv_value, (cb2)csv_eol, &input);
+        csv_parse(&p, row, strlen(row), (cb1)csv_value, (cb2)csv_eol, &data);
     }
 
     csv_fini(&p, (cb1)csv_value, (cb2)csv_eol, NULL);
@@ -106,14 +106,14 @@ rva_t *backup_load(const char *filename, char *message)
 
     fclose(fh);
 
-    if (input.rvas == NULL)
+    if (data.rvas == NULL)
     {
         sprintf(message, "File %s didn't have any labels or comments", filename);
         return NULL;
     }
 
-    sprintf(message, "Loaded %d labels and %d comments from %s", input.labels, input.comments, filename);
-    return input.rvas;
+    sprintf(message, "Loaded %d labels and %d comments from %s", data.labels, data.comments, filename);
+    return data.rvas;
 }
 
 bool backup_save(const char *filename, rva_t *rvas, char *message)

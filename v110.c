@@ -121,8 +121,8 @@ void _export cdecl ODBG_Pluginaction(int origin, int action, void *item)
             return;
         }
 
-        char buf[PATH_MAX];
-        strcpy(buf, module->path);
+        char buf[MAX_PATH];
+        strcpy_s(buf, sizeof buf, module->path);
 
         char *last_stop = strchr(buf, '.');
         if (!last_stop) {
@@ -134,7 +134,7 @@ void _export cdecl ODBG_Pluginaction(int origin, int action, void *item)
         switch (action) {
             case 0:
             {
-                strcat(buf, ".csv");
+                strcat_s(buf, sizeof buf, ".csv");
                 SaveToFile(module, buf);
                 break;
             }
@@ -146,7 +146,7 @@ void _export cdecl ODBG_Pluginaction(int origin, int action, void *item)
                 struct tm *loctime = localtime(&now);
 
                 strftime(tbuf, sizeof tbuf, "-%Y%m%d_%H%M%S.csv", loctime);
-                strcat(buf, tbuf);
+                strcat_s(buf, sizeof buf, tbuf);
 
                 SaveToFile(module, buf);
                 break;
@@ -154,7 +154,7 @@ void _export cdecl ODBG_Pluginaction(int origin, int action, void *item)
 
             case 2:
             {
-                strcat(buf, ".csv");
+                strcat_s(buf, sizeof buf, ".csv");
                 LoadFromFile(module, buf);
                 break;
             }
@@ -217,8 +217,8 @@ static void SaveToFile(t_module *module, const char *filename)
         if (label[0] || comment[0]) {
             rva_t *rva = malloc(sizeof(rva_t));
             rva->address = address - module->base;
-            strcpy(rva->label, label);
-            strcpy(rva->comment, comment);
+            strcpy_s(rva->label, sizeof(rva->label), label);
+            strcpy_s(rva->comment, sizeof(rva->label), comment);
             LIST_INSERT(rvas, rva);
         }
     }

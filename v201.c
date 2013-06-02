@@ -92,8 +92,8 @@ static int menucb(t_table *pt, wchar_t *name, ulong index, int mode)
 
     if (mode == MENU_EXECUTE) {
 
-        wchar_t buf[PATH_MAX];
-        wcscpy(buf, module->path);
+        wchar_t buf[MAXPATH];
+        wcscpy_s(buf, sizeof buf, module->path);
 
         wchar_t *last_stop = wcsrchr(buf, L'.');
 
@@ -106,7 +106,7 @@ static int menucb(t_table *pt, wchar_t *name, ulong index, int mode)
         switch (index) {
             case 0:
             {
-                wcscat(buf, L".csv");
+                wcscat_s(buf, sizeof buf, L".csv");
                 SaveToFile(module, buf);
                 break;
             }
@@ -119,7 +119,7 @@ static int menucb(t_table *pt, wchar_t *name, ulong index, int mode)
                 loctime = localtime(&now);
 
                 wcsftime(tbuf, sizeof tbuf, L"-%Y%m%d_%H%M%S.csv", loctime);
-                wcscat(buf, tbuf);
+                wcscat_s(buf, sizeof buf, tbuf);
 
                 SaveToFile(module, buf);
                 break;
@@ -127,7 +127,7 @@ static int menucb(t_table *pt, wchar_t *name, ulong index, int mode)
 
             case 2:
             {
-                wcscat(buf, L".csv");
+                wcscat_s(buf, sizeof buf, L".csv");
                 LoadFromFile(module, buf);
                 break;
             }
@@ -223,7 +223,7 @@ static void LoadFromFile(t_module *module, const wchar_t *filename)
 
     char message[1024];
 
-    Unicodetoutf(filename, (MAX_PATH * sizeof(wchar_t)), utf, sizeof utf);
+    Unicodetoutf(filename, (MAXPATH * sizeof(wchar_t)), utf, sizeof utf);
 
     rva_t *rvas = backup_load(utf, message);
 
@@ -274,14 +274,14 @@ static void SaveToFile(t_module *module, const wchar_t *filename)
         if (label[0] || comment[0]) {
             rva_t *rva = malloc(sizeof(rva_t));
             rva->address = address - module->base;
-            Unicodetoutf(label, (MAX_PATH * sizeof(wchar_t)), rva->label, sizeof(rva->label));
-            Unicodetoutf(comment, (MAX_PATH * sizeof(wchar_t)), rva->comment, sizeof(rva->comment));
+            Unicodetoutf(label, sizeof label, rva->label, sizeof(rva->label));
+            Unicodetoutf(comment, sizeof comment, rva->comment, sizeof(rva->comment));
             LIST_INSERT(rvas, rva);
         }
     }
 
     char message[1024];
-    Unicodetoutf(filename, (MAX_PATH * sizeof(wchar_t)), utf, sizeof utf);
+    Unicodetoutf(filename, wcslen(filename), utf, sizeof utf);
 
     if (backup_save(utf, rvas, message)) {
         Utftounicode(message, strlen(message), unicode, sizeof unicode);
