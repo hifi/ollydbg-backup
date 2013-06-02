@@ -179,7 +179,7 @@ t_menu pluginmenu[] = {
         { 2 }
     },
     {
-        L"Load...",
+        L"L&oad...",
         NULL,
         K_NONE,
         menucb,
