@@ -77,8 +77,8 @@ extc int _export cdecl ODBG2_Pluginquery(int ollydbgversion, ulong *features, wc
 
     initialized = true;
 
-    wcscpy_s(pluginname, sizeof pluginname, PLUGINNAME);
-    wcscpy_s(pluginversion, sizeof pluginversion, REV);
+    wcscpy_s(pluginname, SHORTNAME, PLUGINNAME);
+    wcscpy_s(pluginversion, SHORTNAME, REV);
     return PLUGIN_VERSION;
 }
 
@@ -98,7 +98,7 @@ static int menucb(t_table *pt, wchar_t *name, ulong index, int mode)
     if (mode == MENU_EXECUTE) {
 
         wchar_t buf[MAXPATH];
-        wcscpy_s(buf, sizeof buf, module->path);
+        wcscpy_s(buf, _countof(buf), module->path);
 
         wchar_t *last_stop = wcsrchr(buf, L'.');
 
@@ -111,7 +111,7 @@ static int menucb(t_table *pt, wchar_t *name, ulong index, int mode)
         switch (index) {
             case 0:
             {
-                wcscat_s(buf, sizeof buf, L".csv");
+                wcscat_s(buf, _countof(buf), L".csv");
                 SaveToFile(module, buf);
                 break;
             }
@@ -120,26 +120,28 @@ static int menucb(t_table *pt, wchar_t *name, ulong index, int mode)
             {
                 wchar_t tbuf[32];
 
-                GetDateFormatW(LOCALE_USER_DEFAULT, 0, NULL, L"-yyyy''MM''dd", tbuf, sizeof tbuf);
-                wcscat_s(buf, sizeof buf, tbuf);
+                GetDateFormatW(LOCALE_USER_DEFAULT, 0, NULL, L"-yyyy''MM''dd", tbuf, _countof(tbuf));
+                wcscat_s(buf, _countof(buf), tbuf);
 
                 GetTimeFormatW(LOCALE_USER_DEFAULT, TIME_FORCE24HOURFORMAT, NULL, L"_hh''mm''ss", tbuf, sizeof tbuf);
-                wcscat_s(buf, sizeof buf, tbuf);
+                GetTimeFormatW(LOCALE_USER_DEFAULT, TIME_FORCE24HOURFORMAT, NULL, L"_hh''mm''ss", tbuf, _countof(tbuf));
+                wcscat_s(buf, _countof(buf), tbuf);
 
+                wcscat_s(buf, _countof(buf), L".csv");
                 SaveToFile(module, buf);
                 break;
             }
 
             case 2:
             {
-                wcscat_s(buf, sizeof buf, L".csv");
+                wcscat_s(buf, _countof(buf), L".csv");
                 LoadFromFile(module, buf);
                 break;
             }
 
             case 3:
             {
-                wcscat_s(buf, sizeof buf, L".csv");
+                wcscat_s(buf, _countof(buf), L".csv");
                 if (Browsefilename(L"Select a CSV file...", buf, NULL, NULL, L".csv", NULL, 0)) {
                     LoadFromFile(module, buf);
                 }
@@ -229,23 +231,23 @@ static void LoadFromFile(t_module *module, const wchar_t *filename)
 
     char message[1024];
 
-    Unicodetoutf(filename, wcslen(filename), utf, sizeof utf);
+    Unicodetoutf(filename, wcslen(filename), utf, _countof(utf));
 
     rva_t *rvas = backup_load(utf, message);
 
     if (rvas == NULL) {
-        Utftounicode(message, strlen(message), unicode, sizeof unicode);
+        Utftounicode(message, strlen(message), unicode, _countof(unicode));
         Flash(unicode);
         return;
     }
 
     LIST_FOREACH (rvas, rva_t, rva) {
         if (rva->label[0]) {
-            Utftounicode(rva->label, strlen(rva->label), unicode, sizeof unicode);
+            Utftounicode(rva->label, strlen(rva->label), unicode, _countof(unicode));
             QuickinsertnameW(module->base + rva->address, NM_LABEL, unicode);
         }
         if (rva->comment[0]) {
-            Utftounicode(rva->comment, strlen(rva->comment), unicode, sizeof unicode);
+            Utftounicode(rva->comment, strlen(rva->comment), unicode, _countof(unicode));
             QuickinsertnameW(module->base + rva->address, NM_COMMENT, unicode);
         }
     }
@@ -254,7 +256,7 @@ static void LoadFromFile(t_module *module, const wchar_t *filename)
 
     Mergequickdata();
 
-    Utftounicode(message, strlen(message), unicode, sizeof unicode);
+    Utftounicode(message, strlen(message), unicode, _countof(unicode));
     Info(unicode);
 }
 
@@ -274,26 +276,26 @@ static void SaveToFile(t_module *module, const wchar_t *filename)
         label[0] = L'\0';
         comment[0] = L'\0';
 
-        FindnameW(address, NM_LABEL, label, sizeof label);
-        FindnameW(address, NM_COMMENT, comment, sizeof label);
+        FindnameW(address, NM_LABEL, label, _countof(label));
+        FindnameW(address, NM_COMMENT, comment, _countof(label));
 
         if (label[0] || comment[0]) {
             rva_t *rva = malloc(sizeof(rva_t));
             rva->address = address - module->base;
-            Unicodetoutf(label, sizeof label, rva->label, sizeof(rva->label));
-            Unicodetoutf(comment, sizeof comment, rva->comment, sizeof(rva->comment));
+            Unicodetoutf(label, _countof(label), rva->label, sizeof(rva->label));
+            Unicodetoutf(comment, _countof(comment), rva->comment, sizeof(rva->comment));
             LIST_INSERT(rvas, rva);
         }
     }
 
     char message[1024];
-    Unicodetoutf(filename, wcslen(filename), utf, sizeof utf);
+    Unicodetoutf(filename, wcslen(filename), utf, _countof(utf));
 
     if (backup_save(utf, rvas, message)) {
-        Utftounicode(message, strlen(message), unicode, sizeof unicode);
+        Utftounicode(message, strlen(message), unicode, _countof(unicode));
         Info(unicode);
     } else {
-        Utftounicode(message, strlen(message), unicode, sizeof unicode);
+        Utftounicode(message, strlen(message), unicode, _countof(unicode));
         Flash(unicode);
     }
 }
