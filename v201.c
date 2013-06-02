@@ -75,8 +75,8 @@ extc int _export cdecl ODBG2_Pluginquery(int ollydbgversion, ulong *features, wc
     if (ollydbgversion < 201)
         return 0;
 
-    wcscpy(pluginname, PLUGINNAME);
-    wcscpy(pluginversion, REV);
+    wcscpy_s(pluginname, sizeof pluginname, PLUGINNAME);
+    wcscpy_s(pluginversion, sizeof pluginversion, REV);
     return PLUGIN_VERSION;
 }
 
@@ -223,7 +223,7 @@ static void LoadFromFile(t_module *module, const wchar_t *filename)
 
     char message[1024];
 
-    Unicodetoutf(filename, (MAXPATH * sizeof(wchar_t)), utf, sizeof utf);
+    Unicodetoutf(filename, wcslen(filename), utf, sizeof utf);
 
     rva_t *rvas = backup_load(utf, message);
 
