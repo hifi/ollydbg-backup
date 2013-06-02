@@ -156,6 +156,7 @@ void _export cdecl ODBG_Pluginaction(int origin, int action, void *item)
 
             case 3:
             {
+                strcat_s(buf, sizeof buf, ".csv");
                 if (Browsefilename("Select a CSV file...", buf, ".csv;*.txt", 0) == TRUE) {
                     LoadFromFile(module, buf);
                 }

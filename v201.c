@@ -141,6 +141,7 @@ static int menucb(t_table *pt, wchar_t *name, ulong index, int mode)
 
             case 3:
             {
+                wcscat_s(buf, sizeof buf, L".csv");
                 if (Browsefilename(L"Select a CSV file...", buf, NULL, NULL, L".csv", NULL, 0)) {
                     LoadFromFile(module, buf);
                 }
