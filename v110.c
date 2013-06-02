@@ -49,15 +49,6 @@
 #undef Findname
 #undef Findmodule
 
-#ifdef _DEBUG
-    #define dprintf(...) fprintf(stderr, __VA_ARGS__)
-#else
-    #define dprintf(...)
-#endif
-
-#define lprintf(...) \
-    Infoline(__VA_ARGS__); Addtolist(0, 0, __VA_ARGS__)
-
 static void LoadFromFile(t_module *module, const char *filename);
 static void SaveToFile(t_module *module, const char *filename);
 
@@ -198,7 +189,7 @@ static void LoadFromFile(t_module *module, const char *filename)
 
     Mergequicknames();
 
-    lprintf(message);
+    Infoline(message);
 }
 
 static void SaveToFile(t_module *module, const char *filename)
@@ -229,7 +220,7 @@ static void SaveToFile(t_module *module, const char *filename)
 
     char message[1024];
     if (backup_save(filename, rvas, message)) {
-        lprintf(message);
+        Infoline(message);
     } else {
         Flash(message);
     }
