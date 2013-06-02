@@ -121,69 +121,49 @@ void _export cdecl ODBG_Pluginaction(int origin, int action, void *item)
             return;
         }
 
+        char buf[PATH_MAX];
+        strcpy(buf, module->path);
+
+        char *last_stop = strchr(buf, '.');
+        if (!last_stop) {
+            return;
+        }
+
+        *last_stop= '\0';
+
         switch (action) {
             case 0:
             {
-                char buf[PATH_MAX];
-                strcpy(buf, module->path);
-
-                char *last_stop = strchr(buf, '.');
-                if (last_stop) {
-                    *last_stop= '\0';
-                    strcat(buf, ".csv");
-
-                    SaveToFile(module, buf);
-                }
-
+                strcat(buf, ".csv");
+                SaveToFile(module, buf);
                 break;
             }
 
             case 1:
             {
-                char buf[PATH_MAX];
-                strcpy(buf, module->path);
+                time_t now = time(NULL);
+                char tbuf[32];
+                struct tm *loctime = localtime(&now);
 
-                char *last_stop = strchr(buf, '.');
-                if (last_stop) {
-                    *last_stop= '\0';
+                strftime(tbuf, sizeof tbuf, "-%Y%m%d_%H%M%S.csv", loctime);
+                strcat(buf, tbuf);
 
-                    time_t now = time(NULL);
-                    char tbuf[32];
-                    struct tm *loctime = localtime(&now);
-
-                    strftime(tbuf, sizeof tbuf, "-%Y%m%d_%H%M%S.csv", loctime);
-                    strcat(buf, tbuf);
-
-                    SaveToFile(module, buf);
-                }
-
+                SaveToFile(module, buf);
                 break;
             }
 
             case 2:
             {
-                char buf[PATH_MAX];
-                strcpy(buf, module->path);
-
-                char *last_stop = strchr(buf, '.');
-                if (last_stop) {
-                    *last_stop= '\0';
-                    strcat(buf, ".csv");
-
-                    LoadFromFile(module, buf);
-                }
-
+                strcat(buf, ".csv");
+                LoadFromFile(module, buf);
                 break;
             }
 
             case 3:
             {
-                char buf[PATH_MAX] = { '\0' };
-
                 if (Browsefilename("Select a CSV file...", buf, ".csv;*.txt", 0) == TRUE) {
                     LoadFromFile(module, buf);
                 }
-
                 break;
             }
         }
