@@ -53,8 +53,13 @@
 static void LoadFromFile(t_module *module, const wchar_t *filename);
 static void SaveToFile(t_module *module, const wchar_t *filename);
 
-void v201_init()
+static bool initialized = false;
+
+extc int _export cdecl ODBG2_Pluginquery(int ollydbgversion, ulong *features, wchar_t pluginname[SHORTNAME], wchar_t pluginversion[SHORTNAME])
 {
+    if (ollydbgversion < 201)
+        return 0;
+
     HANDLE handle = GetModuleHandle(NULL);
 
     Findmainmodule      = (void *)GetProcAddress(handle, "Findmainmodule");
@@ -66,14 +71,13 @@ void v201_init()
     Info                = (void *)GetProcAddress(handle, "Info");
     QuickinsertnameW    = (void *)GetProcAddress(handle, "QuickinsertnameW");
     Mergequickdata      = (void *)GetProcAddress(handle, "Mergequickdata");
-}
 
-extc int _export cdecl ODBG2_Pluginquery(int ollydbgversion, ulong *features, wchar_t pluginname[SHORTNAME], wchar_t pluginversion[SHORTNAME])
-{
-    v201_init();
-
-    if (ollydbgversion < 201)
+    if (!Findmainmodule || !Browsefilename || !Flash || !Unicodetoutf
+            || !Utftounicode || !FindnameW || !Info || !QuickinsertnameW
+            || !Mergequickdata)
         return 0;
+
+    initialized = true;
 
     wcscpy_s(pluginname, sizeof pluginname, PLUGINNAME);
     wcscpy_s(pluginversion, sizeof pluginversion, REV);
@@ -82,6 +86,9 @@ extc int _export cdecl ODBG2_Pluginquery(int ollydbgversion, ulong *features, wc
 
 static int menucb(t_table *pt, wchar_t *name, ulong index, int mode)
 {
+    if (!initialized)
+        return MENU_GRAYED;
+
     t_module *module = Findmainmodule();
 
     if (module == NULL)

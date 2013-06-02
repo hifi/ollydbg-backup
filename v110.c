@@ -61,8 +61,13 @@
 static void LoadFromFile(t_module *module, const char *filename);
 static void SaveToFile(t_module *module, const char *filename);
 
-static void v110_init()
+static bool initialized = false;
+
+int _export cdecl ODBG_Plugininit(int ollydbgversion, HWND hw, ulong *features)
 {
+    if (ollydbgversion < 110)
+        return -1;
+
     HANDLE handle = GetModuleHandle(NULL);
 
     Addtolist       = (void *)GetProcAddress(handle, "_Addtolist");
@@ -74,18 +79,14 @@ static void v110_init()
     Mergequicknames = (void *)GetProcAddress(handle, "_Mergequicknames");
     Infoline        = (void *)GetProcAddress(handle, "_Infoline");
     Findname        = (void *)GetProcAddress(handle, "_Findname");
-}
 
-int _export cdecl ODBG_Plugininit(int ollydbgversion, HWND hw, ulong *features)
-{
-    v110_init();
-
-    if (ollydbgversion < 110) {
-        Addtolist(0, 0, "OllyDbg too old, backup manager not initialized.");
+    if (!Addtolist || !Plugingetvalue || !Findmodule || !Flash
+            || !Browsefilename  || !Quickinsertname || !Mergequicknames
+            || !Infoline || !Findname)
         return -1;
-    }
 
-    Addtolist(0, 0, "Backup manager loaded.");
+    initialized = true;
+
     return 0;
 }
 
@@ -112,6 +113,9 @@ int _export cdecl ODBG_Pluginmenu(int origin, char data[4096], void *item)
 
 void _export cdecl ODBG_Pluginaction(int origin, int action, void *item)
 {
+    if (!initialized)
+        return;
+
     if (origin == PM_MAIN) {
 
         t_module *module = Findmodule(Plugingetvalue(VAL_MAINBASE));
