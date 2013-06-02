@@ -15,8 +15,6 @@
  */
 
 #include <windows.h>
-#include <stdio.h>
-#include <time.h>
 #include "backup.h"
 #include "list.h"
 
@@ -136,13 +134,15 @@ void _export cdecl ODBG_Pluginaction(int origin, int action, void *item)
 
             case 1:
             {
-                time_t now = time(NULL);
                 char tbuf[32];
-                struct tm *loctime = localtime(&now);
 
-                strftime(tbuf, sizeof tbuf, "-%Y%m%d_%H%M%S.csv", loctime);
+                GetDateFormat(LOCALE_USER_DEFAULT, 0, NULL, "-yyyy''MM''dd", tbuf, sizeof tbuf);
                 strcat_s(buf, sizeof buf, tbuf);
 
+                GetTimeFormat(LOCALE_USER_DEFAULT, 0, NULL, "_hh''mm''ss", tbuf, sizeof tbuf);
+                strcat_s(buf, sizeof buf, tbuf);
+
+                strcat_s(buf, sizeof buf, ".csv");
                 SaveToFile(module, buf);
                 break;
             }

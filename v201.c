@@ -18,8 +18,6 @@
 #define _UNICODE
 
 #include <windows.h>
-#include <stdio.h>
-#include <time.h>
 #include "backup.h"
 #include "list.h"
 
@@ -120,12 +118,12 @@ static int menucb(t_table *pt, wchar_t *name, ulong index, int mode)
 
             case 1:
             {
-                time_t now = time(NULL);
                 wchar_t tbuf[32];
-                struct tm *loctime;
-                loctime = localtime(&now);
 
-                wcsftime(tbuf, sizeof tbuf, L"-%Y%m%d_%H%M%S.csv", loctime);
+                GetDateFormatW(LOCALE_USER_DEFAULT, 0, NULL, L"-yyyy''MM''dd", tbuf, sizeof tbuf);
+                wcscat_s(buf, sizeof buf, tbuf);
+
+                GetTimeFormatW(LOCALE_USER_DEFAULT, 0, NULL, L"_hh''mm''ss", tbuf, sizeof tbuf);
                 wcscat_s(buf, sizeof buf, tbuf);
 
                 SaveToFile(module, buf);
