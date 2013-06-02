@@ -139,7 +139,7 @@ void _export cdecl ODBG_Pluginaction(int origin, int action, void *item)
                 GetDateFormat(LOCALE_USER_DEFAULT, 0, NULL, "-yyyy''MM''dd", tbuf, sizeof tbuf);
                 strcat_s(buf, sizeof buf, tbuf);
 
-                GetTimeFormat(LOCALE_USER_DEFAULT, 0, NULL, "_hh''mm''ss", tbuf, sizeof tbuf);
+                GetTimeFormat(LOCALE_USER_DEFAULT, TIME_FORCE24HOURFORMAT, NULL, "_hh''mm''ss", tbuf, sizeof tbuf);
                 strcat_s(buf, sizeof buf, tbuf);
 
                 strcat_s(buf, sizeof buf, ".csv");

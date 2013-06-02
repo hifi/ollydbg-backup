@@ -123,7 +123,7 @@ static int menucb(t_table *pt, wchar_t *name, ulong index, int mode)
                 GetDateFormatW(LOCALE_USER_DEFAULT, 0, NULL, L"-yyyy''MM''dd", tbuf, sizeof tbuf);
                 wcscat_s(buf, sizeof buf, tbuf);
 
-                GetTimeFormatW(LOCALE_USER_DEFAULT, 0, NULL, L"_hh''mm''ss", tbuf, sizeof tbuf);
+                GetTimeFormatW(LOCALE_USER_DEFAULT, TIME_FORCE24HOURFORMAT, NULL, L"_hh''mm''ss", tbuf, sizeof tbuf);
                 wcscat_s(buf, sizeof buf, tbuf);
 
                 SaveToFile(module, buf);
