@@ -20,6 +20,8 @@
 #include "list.h"
 #include "libcsv/csv.h"
 
+BOOL WINAPI DllMainCRTStartup(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) { return TRUE; }
+
 typedef void (*cb1)(void *, size_t, void *);
 typedef void (*cb2)(int, void *);
 
